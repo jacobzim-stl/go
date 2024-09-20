@@ -176,7 +176,7 @@ func (check *Checker) infer(posn positioner, tparams []*TypeParam, targs []Type,
 			// Function parameters are always typed. Arguments may be untyped.
 			// Collect the indices of untyped arguments and handle them later.
 			if isTyped(arg.typ) {
-				if !u.unify(par.typ, arg.typ, assign) {
+				if !u.Unify(par.typ, arg.typ, UnifyModeAssign) {
 					errorf(par.typ, arg.typ, arg)
 					return nil
 				}
@@ -250,12 +250,12 @@ func (check *Checker) infer(posn positioner, tparams []*TypeParam, targs []Type,
 					//    elements, the core type is an underlying (literal) type.
 					//    And because of the tilde, the underlying type of tx must match
 					//    against the core type.
-					//    But because unify automatically matches a defined type against
+					//    But because Unify automatically matches a defined type against
 					//    an underlying literal type, we can simply unify tx with the
 					//    core type.
 					// 2) If the core type doesn't have a tilde, we also must unify tx
 					//    with the core type.
-					if !u.unify(tx, core.typ, 0) {
+					if !u.Unify(tx, core.typ, 0) {
 						// TODO(gri) Type parameters that appear in the constraint and
 						//           for which we have type arguments inferred should
 						//           use those type arguments for a better error message.
@@ -275,14 +275,14 @@ func (check *Checker) infer(posn positioner, tparams []*TypeParam, targs []Type,
 					// and the method signatures must unify; otherwise tx cannot satisfy
 					// the constraint.
 					// TODO(gri) Now that unification handles interfaces, this code can
-					//           be reduced to calling u.unify(tx, tpar.iface(), assign)
+					//           be reduced to calling u.Unify(tx, tpar.iface(), assign)
 					//           (which will compare signatures exactly as we do below).
 					//           We leave it as is for now because missingMethod provides
 					//           a failure cause which allows for a better error message.
-					//           Eventually, unify should return an error with cause.
+					//           Eventually, Unify should return an error with cause.
 					var cause string
 					constraint := tpar.iface()
-					if m, _ := check.missingMethod(tx, constraint, true, func(x, y Type) bool { return u.unify(x, y, exact) }, &cause); m != nil {
+					if m, _ := check.missingMethod(tx, constraint, true, func(x, y Type) bool { return u.Unify(x, y, UnifyModeExact) }, &cause); m != nil {
 						// TODO(gri) better error message (see TODO above)
 						err.addf(posn, "%s (type %s) does not satisfy %s %s", tpar, tx, tpar.Constraint(), cause)
 						return nil

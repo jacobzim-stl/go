@@ -247,7 +247,7 @@ type comparer struct {
 	ignoreInvalids bool // if set, identical treats an invalid type as identical to any type
 }
 
-// For changes to this code the corresponding changes should be made to unifier.nify.
+// For changes to this code the corresponding changes should be made to Unifier.nify.
 func (c *comparer) identical(x, y Type, p *ifacePair) bool {
 	x = Unalias(x)
 	y = Unalias(y)
@@ -470,7 +470,7 @@ func (c *comparer) identical(x, y Type, p *ifacePair) bool {
 		// in the same type declaration; if they are instantiated they
 		// must have identical type argument lists.
 		if y := asNamed(y); y != nil {
-			// check type arguments before origins to match unifier
+			// check type arguments before origins to match Unifier
 			// (for correct source code we need to do all checks so
 			// order doesn't matter)
 			xargs := x.TypeArgs().list()
